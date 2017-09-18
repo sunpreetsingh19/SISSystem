@@ -11,7 +11,7 @@ public class Main {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ClientLogin frame = new ClientLogin();
+					ChooseLogin frame = new ChooseLogin();
 					
 				} catch (Exception e) {
 					e.printStackTrace();
