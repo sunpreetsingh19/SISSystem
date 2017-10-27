@@ -1,7 +1,11 @@
 package main;
 import java.awt.EventQueue;
 
-import client.ClientLogin;
+import javax.swing.UIManager;
+
+import com.alee.laf.WebLookAndFeel;
+
+
 
 
 
@@ -11,7 +15,8 @@ public class Main {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ChooseLogin frame = new ChooseLogin();
+					LoginChoose frame = new LoginChoose();
+					 WebLookAndFeel.install();
 					
 				} catch (Exception e) {
 					e.printStackTrace();

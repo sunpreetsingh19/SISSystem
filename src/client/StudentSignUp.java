@@ -1,0 +1,356 @@
+package client;
+
+import javax.swing.JFrame;
+import javax.swing.SpringLayout;
+import javax.swing.border.Border;
+
+import org.omg.CORBA.PUBLIC_MEMBER;
+
+import com.mysql.jdbc.ResultSet;
+
+import admin.AdminDashboard;
+import main.LoginChoose;
+import validation.SignUpValidation;
+import javabeans.DatabaseConnection;
+
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JPasswordField;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import java.awt.Color;
+import java.awt.Dialog;
+import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.text.SimpleDateFormat;
+
+import javax.swing.JFormattedTextField;
+
+public class StudentSignUp extends JFrame {
+	private JTextField nameField;
+	private JTextField postalField;
+	private JTextField phoneField;
+	private JTextField userField;
+	private JPasswordField passwordField;
+	private JTextField studentIDField;
+	private JTextField dobField;
+	private JTextField addressField1;
+	private JTextField addressField2;
+
+	 public StudentSignUp() {
+		
+		 setTitle("Sign up for Student");
+		
+	 	getContentPane().setBackground(SystemColor.inactiveCaptionBorder);
+		setResizable(false);
+		
+		 setSize(650,400);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
+		setLocationRelativeTo(null);
+		setVisible(true);
+		SpringLayout springLayout = new SpringLayout();
+		getContentPane().setLayout(springLayout);
+		
+		JLabel lblName = new JLabel("Name:");
+		springLayout.putConstraint(SpringLayout.NORTH, lblName, 63, SpringLayout.NORTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, lblName, 10, SpringLayout.WEST, getContentPane());
+		getContentPane().add(lblName);
+		
+		nameField = new JTextField();
+		springLayout.putConstraint(SpringLayout.NORTH, nameField, -3, SpringLayout.NORTH, lblName);
+		springLayout.putConstraint(SpringLayout.WEST, nameField, 52, SpringLayout.EAST, lblName);
+		getContentPane().add(nameField);
+		nameField.setColumns(12);
+		
+		JLabel lblDateOfBirth = new JLabel("Date of Birth:");
+		springLayout.putConstraint(SpringLayout.NORTH, lblDateOfBirth, 36, SpringLayout.SOUTH, lblName);
+		springLayout.putConstraint(SpringLayout.WEST, lblDateOfBirth, 0, SpringLayout.WEST, lblName);
+		getContentPane().add(lblDateOfBirth);
+		
+		JLabel lblGender = new JLabel("Gender:");
+		springLayout.putConstraint(SpringLayout.WEST, lblGender, 0, SpringLayout.WEST, lblName);
+		getContentPane().add(lblGender);
+		
+		JRadioButton rdbtnMale = new JRadioButton("Male");
+		springLayout.putConstraint(SpringLayout.NORTH, rdbtnMale, -4, SpringLayout.NORTH, lblGender);
+		springLayout.putConstraint(SpringLayout.WEST, rdbtnMale, 0, SpringLayout.WEST, nameField);
+		getContentPane().add(rdbtnMale);
+		
+		JRadioButton rdbtnFemale = new JRadioButton("Female");
+		springLayout.putConstraint(SpringLayout.NORTH, rdbtnFemale, -4, SpringLayout.NORTH, lblGender);
+		springLayout.putConstraint(SpringLayout.WEST, rdbtnFemale, 6, SpringLayout.EAST, rdbtnMale);
+		getContentPane().add(rdbtnFemale);
+		
+		//radiobutton combine
+				ButtonGroup radioGroup= new ButtonGroup();
+				radioGroup.add(rdbtnMale);
+				radioGroup.add(rdbtnFemale);
+				rdbtnMale.setSelected(true);
+				
+				
+				
+		JLabel lblAddress = new JLabel("Address:");
+		springLayout.putConstraint(SpringLayout.SOUTH, lblGender, -22, SpringLayout.NORTH, lblAddress);
+		springLayout.putConstraint(SpringLayout.NORTH, lblAddress, 199, SpringLayout.NORTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, lblAddress, 0, SpringLayout.WEST, lblName);
+		getContentPane().add(lblAddress);
+		Border border = BorderFactory.createLineBorder(Color.GRAY);
+		
+		JLabel lblPostalCode = new JLabel("Postal code:");
+		springLayout.putConstraint(SpringLayout.NORTH, lblPostalCode, 38, SpringLayout.SOUTH, lblAddress);
+		springLayout.putConstraint(SpringLayout.WEST, lblPostalCode, 0, SpringLayout.WEST, lblName);
+		getContentPane().add(lblPostalCode);
+		
+		postalField = new JTextField();
+		springLayout.putConstraint(SpringLayout.NORTH, postalField, -3, SpringLayout.NORTH, lblPostalCode);
+		springLayout.putConstraint(SpringLayout.WEST, postalField, 0, SpringLayout.WEST, nameField);
+		getContentPane().add(postalField);
+		postalField.setColumns(10);
+		
+		JLabel lblContactNo = new JLabel("Contact no.");
+		springLayout.putConstraint(SpringLayout.NORTH, lblContactNo, 36, SpringLayout.SOUTH, lblPostalCode);
+		springLayout.putConstraint(SpringLayout.WEST, lblContactNo, 0, SpringLayout.WEST, lblName);
+		getContentPane().add(lblContactNo);
+		
+		phoneField = new JTextField();
+		springLayout.putConstraint(SpringLayout.NORTH, phoneField, -3, SpringLayout.NORTH, lblContactNo);
+		springLayout.putConstraint(SpringLayout.WEST, phoneField, 0, SpringLayout.WEST, nameField);
+		getContentPane().add(phoneField);
+		phoneField.setColumns(12);
+		
+		JLabel lblProgram = new JLabel("Program:");
+		springLayout.putConstraint(SpringLayout.NORTH, lblProgram, 0, SpringLayout.NORTH, lblName);
+		springLayout.putConstraint(SpringLayout.WEST, lblProgram, 59, SpringLayout.EAST, nameField);
+		getContentPane().add(lblProgram);
+		
+		JLabel lblSession = new JLabel("Session:");
+		springLayout.putConstraint(SpringLayout.NORTH, lblSession, 0, SpringLayout.NORTH, lblDateOfBirth);
+		springLayout.putConstraint(SpringLayout.WEST, lblSession, 0, SpringLayout.WEST, lblProgram);
+		getContentPane().add(lblSession);
+		
+		JLabel lblUsername = new JLabel("Username:");
+		springLayout.putConstraint(SpringLayout.NORTH, lblUsername, 0, SpringLayout.NORTH, lblGender);
+		springLayout.putConstraint(SpringLayout.WEST, lblUsername, 0, SpringLayout.WEST, lblProgram);
+		getContentPane().add(lblUsername);
+		
+		JLabel lblPassword = new JLabel("Password:");
+		springLayout.putConstraint(SpringLayout.NORTH, lblPassword, 0, SpringLayout.NORTH, lblAddress);
+		springLayout.putConstraint(SpringLayout.WEST, lblPassword, 0, SpringLayout.WEST, lblProgram);
+		getContentPane().add(lblPassword);
+		
+		JComboBox programBox = new JComboBox();
+		springLayout.putConstraint(SpringLayout.NORTH, programBox, -3, SpringLayout.NORTH, lblName);
+		springLayout.putConstraint(SpringLayout.WEST, programBox, 43, SpringLayout.EAST, lblProgram);
+		getContentPane().add(programBox);
+		
+		//program list
+		try {
+			DatabaseConnection connection = new DatabaseConnection();
+			Connection conn = connection.openConnection();
+			String sql ="Select * from programs";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			ResultSet rs = (ResultSet) statement.executeQuery(sql);
+			
+			while(rs.next()) {
+				String id= rs.getString("id");
+				String program= rs.getString("name");
+				
+				programBox.addItem(id+" "+program);
+			}
+			conn.close();
+			}catch(Exception ex) {
+				ex.printStackTrace();
+			}
+		
+		JComboBox sessionBox = new JComboBox();
+		springLayout.putConstraint(SpringLayout.NORTH, sessionBox, -3, SpringLayout.NORTH, lblDateOfBirth);
+		springLayout.putConstraint(SpringLayout.WEST, sessionBox, 0, SpringLayout.WEST, programBox);
+		
+		//sessions list
+		try {
+		DatabaseConnection connection = new DatabaseConnection();
+		Connection conn = connection.openConnection();
+		
+		String sql ="Select * from sessions";
+		PreparedStatement statement = conn.prepareStatement(sql);
+		ResultSet rs = (ResultSet) statement.executeQuery(sql);
+		
+		while(rs.next()) {
+			String year= rs.getString("year");
+			String term= rs.getString("term");
+			
+			sessionBox.addItem(term+" "+year);
+		}
+		conn.close();
+		}catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		getContentPane().add(sessionBox);
+		
+		userField = new JTextField();
+		springLayout.putConstraint(SpringLayout.NORTH, userField, -3, SpringLayout.NORTH, lblGender);
+		springLayout.putConstraint(SpringLayout.WEST, userField, 0, SpringLayout.WEST, programBox);
+		getContentPane().add(userField);
+		userField.setColumns(10);
+		
+		passwordField = new JPasswordField();
+		springLayout.putConstraint(SpringLayout.NORTH, passwordField, -3, SpringLayout.NORTH, lblAddress);
+		springLayout.putConstraint(SpringLayout.WEST, passwordField, 0, SpringLayout.WEST, programBox);
+		springLayout.putConstraint(SpringLayout.EAST, passwordField, 0, SpringLayout.EAST, userField);
+		getContentPane().add(passwordField);
+		
+		JButton btnSubmit = new JButton("Submit");
+		springLayout.putConstraint(SpringLayout.SOUTH, btnSubmit, -10, SpringLayout.SOUTH, getContentPane());
+		getContentPane().add(btnSubmit);
+		
+		//Close Button
+		JButton btnClose = new JButton("Close");
+		springLayout.putConstraint(SpringLayout.SOUTH, btnClose, -10, SpringLayout.SOUTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.EAST, btnSubmit, -6, SpringLayout.WEST, btnClose);
+		springLayout.putConstraint(SpringLayout.EAST, btnClose, -10, SpringLayout.EAST, getContentPane());
+		getContentPane().add(btnClose);
+		btnClose.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					LoginChoose login= new LoginChoose();
+					login.setVisible(true);
+					dispose();
+				}
+				catch(Exception ex) {
+					ex.printStackTrace();
+					}
+				
+			}
+		});
+		
+		
+		JLabel lblEnterTheCredentials = new JLabel("Enter the credentials here");
+		lblEnterTheCredentials.setForeground(new Color(0, 0, 0));
+		springLayout.putConstraint(SpringLayout.NORTH, lblEnterTheCredentials, 10, SpringLayout.NORTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, lblEnterTheCredentials, 0, SpringLayout.WEST, lblName);
+		getContentPane().add(lblEnterTheCredentials);
+		
+		JLabel lblStudentId = new JLabel("Student ID:");
+		springLayout.putConstraint(SpringLayout.NORTH, lblStudentId, 0, SpringLayout.NORTH, lblPostalCode);
+		springLayout.putConstraint(SpringLayout.WEST, lblStudentId, 0, SpringLayout.WEST, lblProgram);
+		getContentPane().add(lblStudentId);
+		
+		studentIDField = new JTextField();
+		studentIDField.setEditable(false);
+		springLayout.putConstraint(SpringLayout.WEST, studentIDField, 0, SpringLayout.WEST, programBox);
+		springLayout.putConstraint(SpringLayout.SOUTH, studentIDField, 0, SpringLayout.SOUTH, lblPostalCode);
+		getContentPane().add(studentIDField);
+		studentIDField.setColumns(10);
+		 setVisible(true);
+		 
+		 //generating student id randomly
+		 double id= Math.random()*1000000;
+		 int studentID= (int)id;
+		 String studentIdentity= String.valueOf(studentID);
+		 studentIDField.setText(studentIdentity);
+		 
+		 dobField = new JTextField();
+		 springLayout.putConstraint(SpringLayout.NORTH, dobField, -3, SpringLayout.NORTH, lblDateOfBirth);
+		 springLayout.putConstraint(SpringLayout.EAST, dobField, 0, SpringLayout.EAST, nameField);
+		 dobField.setColumns(12);
+		 getContentPane().add(dobField);
+		 
+		 addressField1 = new JTextField();
+		 springLayout.putConstraint(SpringLayout.NORTH, addressField1, 11, SpringLayout.SOUTH, rdbtnMale);
+		 springLayout.putConstraint(SpringLayout.WEST, addressField1, 0, SpringLayout.WEST, nameField);
+		 springLayout.putConstraint(SpringLayout.EAST, addressField1, 0, SpringLayout.EAST, nameField);
+		 getContentPane().add(addressField1);
+		 addressField1.setColumns(10);
+		 
+		 addressField2 = new JTextField();
+		 springLayout.putConstraint(SpringLayout.NORTH, addressField2, 6, SpringLayout.SOUTH, addressField1);
+		 springLayout.putConstraint(SpringLayout.WEST, addressField2, 0, SpringLayout.WEST, nameField);
+		 springLayout.putConstraint(SpringLayout.EAST, addressField2, 0, SpringLayout.EAST, nameField);
+		 getContentPane().add(addressField2);
+		 addressField2.setColumns(10);
+		 
+		 //submit button
+		 btnSubmit.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					String name=nameField.getText();
+					String dob= dobField.getText();
+					String gender=null;
+					if(rdbtnMale.isSelected()) {
+						gender= "Male";
+					}
+					else if(rdbtnFemale.isSelected()) {
+						gender="Female";
+					}
+					String address1= addressField1.getText();
+					String address2= addressField2.getText();
+					String postalCode= postalField.getText();
+					String phNum= phoneField.getText();
+					String program= (String) programBox.getSelectedItem();
+					String session= (String) sessionBox.getSelectedItem();
+					String username= userField.getText();
+					String password= passwordField.getText();
+					String studentId= studentIDField.getText();
+					String status= "pending";
+					
+					
+					DatabaseConnection connection = new DatabaseConnection();
+					Connection conn = connection.openConnection();
+					
+					//validation
+					SignUpValidation validate= new SignUpValidation();
+					boolean pincodeStatus=validate.pincodeValidate(postalCode);
+					boolean phoneNumStatus= validate.phonevalidate(phNum);
+					boolean usernameStatus= validate.usernameValidate(username);
+					boolean passwordStatus= validate.passwordValidate(password);
+					if(pincodeStatus==false) {
+						JOptionPane.showMessageDialog(null, "There should be 6 numbers of pincode");
+						
+					}
+					else if(phoneNumStatus==false) {
+						JOptionPane.showMessageDialog(null, "Phone number should contain digits only and in the form \"XXX-XXX-XXXX\"");
+					}
+					else if(usernameStatus==false) {
+						JOptionPane.showMessageDialog(null, "Enter Correct Username/Username already exists");
+					}
+					else if(passwordStatus==false) {
+						JOptionPane.showMessageDialog(null, "Your password must contain one digit,\n one lowercase character,\n one uppercase character,\n one special symbol using \"@#$%\",\n length of password between 6-20 characters");	
+					}
+					else {
+					String sql=  "INSERT INTO student_data (studentid,name,dob,gender,address, pincode, phone, session,program, username, password, status)"+ 
+					"VALUES ('"+studentId+"','"+name+"','"+dob+"','"+gender+"','"+address1+" "+address2+"','"+postalCode+"','"+phNum+"','"+session+"','"+program+"','"+username+"','"+password+"','"+status+"')";
+					PreparedStatement statement = conn.prepareStatement(sql);
+					 statement.executeUpdate(sql);
+					conn.close();
+					JOptionPane.showMessageDialog(null, "Credentials forwarded to Administrator, You can check the status by clicking \"View Status\" button");
+					LoginChoose login= new LoginChoose();
+					dispose();
+					}
+					
+				}catch(Exception ex) {
+					JOptionPane.showMessageDialog(null, "Username already Exists");
+				}
+				
+			}
+		});
+		 
+		
+		 
+		
+	}
+}
