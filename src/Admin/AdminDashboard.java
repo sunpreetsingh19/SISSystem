@@ -2,6 +2,7 @@ package admin;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SpringLayout;
 import javax.swing.table.DefaultTableModel;
 
@@ -17,6 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -31,16 +33,21 @@ import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JTable;
+import javax.swing.JToggleButton;
 
-public class AdminDashboard extends JFrame {
+public class AdminDashboard extends JFrame implements ActionListener {
 	private JTextField searchField;
 	private JTextField nameField;
 	public static Object[][] data;
-	String[] columnCourseData= {"Course ID", "Course name","Date", "Time","Teacher", "Vacancy"};
-	String[] columnDepartmentData = {"Department ID", "Department Name", "Number of Students Enrolled"};
-	private JTable tableCourseData ;
+	String[] columnCourseData = { "Course ID", "Course name", "Date", "Time", "Professor", "Vacancy" };
+	String[] columnDepartmentData = { "Department ID", "Department Name" };
+	private JTable tableCourseData;
 	private JTable tableDepartmentData;
-	public AdminDashboard() {
+	public static String departmentID;
+	private JButton btnLogout, btnAddCourse, requestOfStudent, btnViewDepartmentDetails;
+
+	public AdminDashboard() throws Exception {
+		IconPackage icons= new IconPackage();
 		getContentPane().setBackground(SystemColor.activeCaption);
 
 		setTitle("Welcome " + LoginChoose.username);
@@ -53,9 +60,9 @@ public class AdminDashboard extends JFrame {
 		SpringLayout springLayout = new SpringLayout();
 		getContentPane().setLayout(springLayout);
 
-		JButton btnLogout = new JButton();
-		btnLogout.setIcon(new ImageIcon(getClass().getResource("/image/ImageIcons.jpg")));
-		//btnLogout.setPreferredSize(new Dimension(40, 40));
+		btnLogout = new JButton();
+		btnLogout.setIcon(icons.IconsLogout());
+		// btnLogout.setPreferredSize(new Dimension(40, 40));
 		springLayout.putConstraint(SpringLayout.NORTH, btnLogout, 10, SpringLayout.NORTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, btnLogout, -10, SpringLayout.EAST, getContentPane());
 		getContentPane().add(btnLogout);
@@ -67,91 +74,79 @@ public class AdminDashboard extends JFrame {
 		springLayout.putConstraint(SpringLayout.EAST, tabbedPane, 774, SpringLayout.WEST, getContentPane());
 		getContentPane().add(tabbedPane);
 
+		
 		JPanel Dashboard = new JPanel();
-		tabbedPane.addTab("Dashboard", null, Dashboard, null);
+		tabbedPane.addTab("Dashboard", icons.IconsDash(), Dashboard);
 		SpringLayout sl_Dashboard = new SpringLayout();
 		Dashboard.setLayout(sl_Dashboard);
 
 		JPanel courseList = new JPanel();
 		courseList.setBackground(SystemColor.inactiveCaptionBorder);
-		tabbedPane.addTab("Course Listing", null, courseList, null);
+		tabbedPane.addTab("Course List", icons.IconsCourseList(), courseList);
 		SpringLayout sl_courseList = new SpringLayout();
 		courseList.setLayout(sl_courseList);
-		
-		JButton btnAddCourse = new JButton("Add Course");
+
+		btnAddCourse = new JButton("Add Course");
+		btnAddCourse.setIcon(icons.IconsAdd());
 		sl_courseList.putConstraint(SpringLayout.NORTH, btnAddCourse, 10, SpringLayout.NORTH, courseList);
 		sl_courseList.putConstraint(SpringLayout.WEST, btnAddCourse, 10, SpringLayout.WEST, courseList);
 		courseList.add(btnAddCourse);
-		
-		//add course
-		btnAddCourse.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					AddCourse addCourse= new AddCourse();
-					dispose();
-				}catch(Exception ex) {
-					ex.printStackTrace();
-				}
-				
-			}
-		});
+
+		// add course
+		btnAddCourse.addActionListener(this);
+
 		JComboBox programBox = new JComboBox();
 		sl_courseList.putConstraint(SpringLayout.NORTH, programBox, 10, SpringLayout.NORTH, courseList);
 		sl_courseList.putConstraint(SpringLayout.WEST, programBox, 73, SpringLayout.EAST, btnAddCourse);
 		sl_courseList.putConstraint(SpringLayout.EAST, programBox, 303, SpringLayout.EAST, btnAddCourse);
 		courseList.add(programBox);
-		
-		//search programbox list data
+
+		// search programbox list data
 		try {
 			DatabaseConnection connection = new DatabaseConnection();
 			Connection conn = connection.openConnection();
-			String sql ="Select * from programs";
+			String sql = "Select * from programs";
 			PreparedStatement statement = conn.prepareStatement(sql);
 			ResultSet rs = (ResultSet) statement.executeQuery(sql);
+
 			
-			while(rs.next()) {
-				String id= rs.getString("id");
-				String program= rs.getString("name");
+			while (rs.next()) {
 				
-			programBox.addItem(id+" "+program);
+				//String program = rs.getString("name");
+				programBox.addItem(rs.getString("id"));
+				
 			}
 			conn.close();
-			}catch(Exception ex) {
-				ex.printStackTrace();
-			}
-		
-		
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	
 		JButton btnSearchCourseList = new JButton("Search Course List");
 		sl_courseList.putConstraint(SpringLayout.NORTH, btnSearchCourseList, 0, SpringLayout.NORTH, btnAddCourse);
 		sl_courseList.putConstraint(SpringLayout.WEST, btnSearchCourseList, 6, SpringLayout.EAST, programBox);
 		courseList.add(btnSearchCourseList);
-		
+
 		JScrollPane scrollPaneCourse = new JScrollPane();
 		sl_courseList.putConstraint(SpringLayout.NORTH, scrollPaneCourse, 22, SpringLayout.SOUTH, btnAddCourse);
 		sl_courseList.putConstraint(SpringLayout.WEST, scrollPaneCourse, 0, SpringLayout.WEST, btnAddCourse);
 		sl_courseList.putConstraint(SpringLayout.SOUTH, scrollPaneCourse, -10, SpringLayout.SOUTH, courseList);
 		sl_courseList.putConstraint(SpringLayout.EAST, scrollPaneCourse, 749, SpringLayout.WEST, courseList);
 		courseList.add(scrollPaneCourse);
-		
-		
-		
-		
-		DefaultTableModel tableModelCourse= new DefaultTableModel(columnCourseData, 0);
+
+		DefaultTableModel tableModelCourse = new DefaultTableModel(columnCourseData, 0);
 		tableCourseData = new JTable(tableModelCourse);
 		scrollPaneCourse.setViewportView(tableCourseData);
 		tableCourseData.setRowHeight(30);
-		
-		
+
 		JButton btnViewCourseDetails = new JButton("View Course Details");
+		btnViewCourseDetails.setIcon(icons.IconsSearch());
 		sl_courseList.putConstraint(SpringLayout.SOUTH, btnViewCourseDetails, 0, SpringLayout.SOUTH, btnAddCourse);
 		sl_courseList.putConstraint(SpringLayout.EAST, btnViewCourseDetails, -10, SpringLayout.EAST, courseList);
 		courseList.add(btnViewCourseDetails);
-	//	JScrollPane scroll= new JScrollPane(table);
+		// JScrollPane scroll= new JScrollPane(table);
 
 		// course data panel code
-		
+
 		try {
 			DatabaseConnection connection = new DatabaseConnection();
 			Connection conn = connection.openConnection();
@@ -160,69 +155,53 @@ public class AdminDashboard extends JFrame {
 			PreparedStatement statement = conn.prepareStatement(sql);
 			ResultSet rs = (ResultSet) statement.executeQuery(sql);
 
-			while(rs.next()) {
-				
-				String courseId= rs.getString("course_id");
-				String courseName= rs.getString("course_name");
-				String profName= rs.getString("professor_name");
-				String startDate= rs.getString("start_date");
-				String endDate= rs.getString("end_date");
-				String startTime= rs.getString("start_time");
-				String endTime= rs.getString("end_time");
-				String vacancy= rs.getString("vacancy");
-				
-				String date= startDate+"-"+endDate;
-				String time= startTime+"-"+endTime;
-				//action= new JCheckBox("Details");
-				tableModelCourse.addRow(new Object[] {courseId, courseName,  date, time,profName, vacancy});
-			//	TableColumn selectColumn= studentData.getColumnModel().getColumn(4);
-			//	selectColumn.setCellEditor(new DefaultCellEditor(action));
+			while (rs.next()) {
+
+				String courseId = rs.getString("course_id");
+				String courseName = rs.getString("course_name");
+				String profName = rs.getString("professor_name");
+				String startDate = rs.getString("start_date");
+				String endDate = rs.getString("end_date");
+				String startTime = rs.getString("start_time");
+				String endTime = rs.getString("end_time");
+				String vacancy = rs.getString("vacancy");
+
+				String date = startDate + "-" + endDate;
+				String time = startTime + "-" + endTime;
+				// action= new JCheckBox("Details");
+				tableModelCourse.addRow(new Object[] { courseId, courseName, date, time, profName, vacancy });
+				// TableColumn selectColumn= studentData.getColumnModel().getColumn(4);
+				// selectColumn.setCellEditor(new DefaultCellEditor(action));
 			}
-			
-		
+
 			statement.close();
 			conn.close();
 
-			}catch(Exception ex) {
-				ex.printStackTrace();
-			}
-			
-		
-		
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
 		JPanel enrolments = new JPanel();
 		enrolments.setBackground(SystemColor.inactiveCaptionBorder);
-		tabbedPane.addTab("Enrolled Students", null, enrolments, null);
+		tabbedPane.addTab("Students", icons.IconsEnrollment(), enrolments);
 		SpringLayout sl_enrolments = new SpringLayout();
 		enrolments.setLayout(sl_enrolments);
 
-		JButton requestOfStudent = new JButton("Student Requests");
+		requestOfStudent = new JButton("Student Requests");
 		sl_enrolments.putConstraint(SpringLayout.NORTH, requestOfStudent, 10, SpringLayout.NORTH, enrolments);
 		sl_enrolments.putConstraint(SpringLayout.WEST, requestOfStudent, 10, SpringLayout.WEST, enrolments);
 		enrolments.add(requestOfStudent);
 
 		// enrolments
 		// request of student button
-		requestOfStudent.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					 StudentRequestData studentData = new StudentRequestData();
-				//setVisible(false);
-					
-
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-
-			}
-		});
+		requestOfStudent.addActionListener(this);
 
 		searchField = new JTextField();
 		enrolments.add(searchField);
 		searchField.setColumns(15);
 
 		JButton btnSearch = new JButton("Search");
+		btnSearch.setIcon(icons.IconsSearch());
 		sl_enrolments.putConstraint(SpringLayout.NORTH, btnSearch, 123, SpringLayout.NORTH, enrolments);
 		sl_enrolments.putConstraint(SpringLayout.WEST, btnSearch, 388, SpringLayout.WEST, enrolments);
 		sl_enrolments.putConstraint(SpringLayout.NORTH, searchField, 1, SpringLayout.NORTH, btnSearch);
@@ -244,7 +223,7 @@ public class AdminDashboard extends JFrame {
 		sl_enrolments.putConstraint(SpringLayout.WEST, selectProgram, 0, SpringLayout.WEST, searchField);
 		enrolments.add(selectProgram);
 
-		// combobox
+		// combobox to search program courses
 		try {
 			DatabaseConnection connection = new DatabaseConnection();
 			Connection conn = connection.openConnection();
@@ -292,72 +271,98 @@ public class AdminDashboard extends JFrame {
 		sl_enrolments.putConstraint(SpringLayout.NORTH, lblSearchAStudent, 28, SpringLayout.SOUTH, requestOfStudent);
 		sl_enrolments.putConstraint(SpringLayout.WEST, lblSearchAStudent, 0, SpringLayout.WEST, requestOfStudent);
 		enrolments.add(lblSearchAStudent);
-		
-		
-		
-		//department model
+
+		// department model
 		JPanel addDepartment = new JPanel();
 		addDepartment.setBackground(SystemColor.inactiveCaptionBorder);
-		tabbedPane.addTab("Department Information", null, addDepartment, null);
+		tabbedPane.addTab("Department Information", icons.IconsDepartment(), addDepartment);
 		SpringLayout sl_addDepartment = new SpringLayout();
 		addDepartment.setLayout(sl_addDepartment);
-		
-		JButton btnAddDepartment = new JButton("Add Department");
-		sl_addDepartment.putConstraint(SpringLayout.NORTH, btnAddDepartment, 10, SpringLayout.NORTH, addDepartment);
-		sl_addDepartment.putConstraint(SpringLayout.WEST, btnAddDepartment, 10, SpringLayout.WEST, addDepartment);
-		addDepartment.add(btnAddDepartment);
-		
-		
-		
+
 		JPanel departmentDetails = new JPanel();
-		sl_addDepartment.putConstraint(SpringLayout.NORTH, departmentDetails, 18, SpringLayout.SOUTH, btnAddDepartment);
 		sl_addDepartment.putConstraint(SpringLayout.WEST, departmentDetails, 10, SpringLayout.WEST, addDepartment);
 		sl_addDepartment.putConstraint(SpringLayout.SOUTH, departmentDetails, -21, SpringLayout.SOUTH, addDepartment);
 		sl_addDepartment.putConstraint(SpringLayout.EAST, departmentDetails, 749, SpringLayout.WEST, addDepartment);
 		addDepartment.add(departmentDetails);
-		
-		JButton btnViewDepartmentDetails = new JButton("View Department Details");
-		sl_addDepartment.putConstraint(SpringLayout.NORTH, btnViewDepartmentDetails, 0, SpringLayout.NORTH, btnAddDepartment);
-		sl_addDepartment.putConstraint(SpringLayout.EAST, btnViewDepartmentDetails, 0, SpringLayout.EAST, departmentDetails);
-		
-		
-		
-		DefaultTableModel tableModelDepartment= new DefaultTableModel(columnDepartmentData, 0);
+
+		btnViewDepartmentDetails = new JButton("View Department Details");
+		btnViewDepartmentDetails.setIcon(icons.IconsSearch());
+		sl_addDepartment.putConstraint(SpringLayout.NORTH, btnViewDepartmentDetails, 10, SpringLayout.NORTH,
+				addDepartment);
+		sl_addDepartment.putConstraint(SpringLayout.NORTH, departmentDetails, 18, SpringLayout.SOUTH,
+				btnViewDepartmentDetails);
+		sl_addDepartment.putConstraint(SpringLayout.EAST, btnViewDepartmentDetails, 0, SpringLayout.EAST,
+				departmentDetails);
+		// view department details button
+		btnViewDepartmentDetails.addActionListener(this);
+
+		DefaultTableModel tableModelDepartment = new DefaultTableModel(columnDepartmentData, 0);
 		SpringLayout sl_departmentDetails = new SpringLayout();
 		departmentDetails.setLayout(sl_departmentDetails);
-	//	departmentDetails.add(tableDepartmentData);
-		
-		tableDepartmentData= new JTable(tableModelDepartment);
+		// departmentDetails.add(tableDepartmentData);
+
+		tableDepartmentData = new JTable();
+		tableDepartmentData.setModel(tableModelDepartment);
 		JScrollPane scrollPaneDepartment = new JScrollPane();
-		sl_departmentDetails.putConstraint(SpringLayout.NORTH, scrollPaneDepartment, 0, SpringLayout.NORTH, departmentDetails);
-		sl_departmentDetails.putConstraint(SpringLayout.WEST, scrollPaneDepartment, 0, SpringLayout.WEST, departmentDetails);
-		sl_departmentDetails.putConstraint(SpringLayout.SOUTH, scrollPaneDepartment, 0, SpringLayout.SOUTH, departmentDetails);
-		sl_departmentDetails.putConstraint(SpringLayout.EAST, scrollPaneDepartment, 0, SpringLayout.EAST, departmentDetails);
+		sl_departmentDetails.putConstraint(SpringLayout.NORTH, scrollPaneDepartment, 0, SpringLayout.NORTH,
+				departmentDetails);
+		sl_departmentDetails.putConstraint(SpringLayout.WEST, scrollPaneDepartment, 0, SpringLayout.WEST,
+				departmentDetails);
+		sl_departmentDetails.putConstraint(SpringLayout.SOUTH, scrollPaneDepartment, 0, SpringLayout.SOUTH,
+				departmentDetails);
+		sl_departmentDetails.putConstraint(SpringLayout.EAST, scrollPaneDepartment, 0, SpringLayout.EAST,
+				departmentDetails);
 		departmentDetails.add(scrollPaneDepartment);
 		addDepartment.add(btnViewDepartmentDetails);
 		scrollPaneDepartment.setViewportView(tableDepartmentData);
+		tableDepartmentData.setRowHeight(30);
+		tableDepartmentData.setRowSelectionAllowed(true);
+		tableDepartmentData.addNotify();
 
-		// logout button code
+		try {
+			DatabaseConnection connection = new DatabaseConnection();
+			Connection conn = connection.openConnection();
 
-		btnLogout.addActionListener(new ActionListener() {
+			String sql = "Select * from programs";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			ResultSet rs = (ResultSet) statement.executeQuery(sql);
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					if (e.getSource() == btnLogout) {
-						LoginChoose login = new LoginChoose();
-						
-						
-						
-						dispose();
-					}
+			while (rs.next()) {
 
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
+				String departmentId = rs.getString("id");
+				String departmentName = rs.getString("name");
 
+				// Object[] data= (Object[]) new Object();
+				tableModelDepartment.addRow(new Object[] { departmentId, departmentName });
+
+				// action= new JCheckBox("Details");
+				//
+				// TableColumn selectColumn= studentData.getColumnModel().getColumn(4);
+				// selectColumn.setCellEditor(new DefaultCellEditor(action));
+			}
+
+			statement.close();
+			conn.close();
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+
+		}
+
+		JButton btnAddDepartment = new JButton("Add Department");
+		btnAddDepartment.setIcon(icons.IconsAdd());
+		btnAddDepartment.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				AddDepartment department = new AddDepartment();
 			}
 		});
+		sl_addDepartment.putConstraint(SpringLayout.NORTH, btnAddDepartment, 0, SpringLayout.NORTH,
+				btnViewDepartmentDetails);
+		sl_addDepartment.putConstraint(SpringLayout.WEST, btnAddDepartment, 0, SpringLayout.WEST, departmentDetails);
+		addDepartment.add(btnAddDepartment);
+
+		// logout button code
+		btnLogout.addActionListener(this);
 
 		// styling
 		ImageIcon imageDash = new ImageIcon(getClass().getResource("/image/AdminDash.jpg"));
@@ -366,4 +371,32 @@ public class AdminDashboard extends JFrame {
 		image.setVisible(true);
 		getContentPane().add(image);
 	}
+
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnAddCourse) {
+			AddCourse addCourse = new AddCourse();
+			dispose();
+		} else if (e.getSource() == requestOfStudent) {
+			StudentRequestData studentData = new StudentRequestData();
+		} else if (e.getSource() == btnLogout) {
+			LoginChoose login = new LoginChoose();
+			dispose();
+		} else if (e.getSource() == btnViewDepartmentDetails) {
+			try {
+				int rowNum = tableDepartmentData.getSelectedRow();
+				departmentID = (String) tableDepartmentData.getValueAt(rowNum, 0);
+				viewDepartment departmentDetails = new viewDepartment();
+
+			} catch (Exception ex) {
+				JOptionPane.showMessageDialog(null, "Please select department");
+
+			}
+		}
+
+	}
+	
+
 }
+
+
+

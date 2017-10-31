@@ -36,6 +36,7 @@ public class LoginChoose extends JFrame{
 	private JPasswordField passwordField;
 	public static String username;
 	public LoginChoose() {
+		IconPackage icons= new IconPackage();
 		getContentPane().setBackground(Color.LIGHT_GRAY);
 		
 		setTitle("Login");
@@ -92,6 +93,7 @@ public class LoginChoose extends JFrame{
 		
 		//login button
 		JButton btnLogin = new JButton("Login");
+		btnLogin.setIcon(icons.IconsLogin());
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {

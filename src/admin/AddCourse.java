@@ -6,6 +6,7 @@ import javax.swing.SpringLayout;
 import com.mysql.jdbc.ResultSet;
 
 import javabeans.DatabaseConnection;
+import validation.CourseValidation;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -194,6 +195,7 @@ public class AddCourse extends JFrame {
 		//button submit
 		btnSubmit.addActionListener(new ActionListener() {
 			
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String courseId= (String) courseIdBox.getSelectedItem();
@@ -206,6 +208,20 @@ public class AddCourse extends JFrame {
 				String endTime= endTimeField.getText();
 				String Vacancy= vacancyField.getText();
 				
+				CourseValidation validateCourse= new CourseValidation();
+				boolean courseNumb= validateCourse.courseNumber(courseNum);
+				boolean courseNaming= validateCourse.courseName(courseName);
+				boolean vacancy= validateCourse.courseVacancy(Vacancy);
+				if(!courseNumb) {
+					JOptionPane.showMessageDialog(null, "Please enter valid course Number");
+				}
+				else if(!courseNaming) {
+					JOptionPane.showMessageDialog(null, "Please enter valid course name");
+				}
+				else if(!vacancy) {
+					JOptionPane.showMessageDialog(null, "Accommodation should be between 0 and 200");
+				}
+				else {
 				try {
 					DatabaseConnection connection = new DatabaseConnection();
 					Connection conn = connection.openConnection();
@@ -220,7 +236,7 @@ public class AddCourse extends JFrame {
 					ex.printStackTrace();
 					
 				}
-				
+				}
 			}
 		});
 	}

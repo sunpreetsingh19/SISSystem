@@ -25,15 +25,17 @@ import javax.swing.JComboBox;
 
 public class AddAStudent extends JDialog {
 String studentId= StudentRequestData.studentId;
-String studentID,name, dateOfBirth,gender,address, pincode, program,session, username, password;	
+String studentID,name, dateOfBirth,gender,address, pincode, program,term,session, username, password;	
 private JTextField studentIDField;
 	
 	private JTextField studentNameField;
 	private JTextField dob;
 	private JTextField postalField;
+	
 	private JTextField sessionField;
 	private JTextField programField;
 	private JTextField userField;
+	private String enrollments, departmentId;
 	public AddAStudent() {
 		setResizable(false);
 		setVisible(true);
@@ -174,7 +176,10 @@ private JTextField studentIDField;
 		getContentPane().add(sessionBox);
 		
 		
-		
+		JComboBox termBox = new JComboBox();
+		springLayout.putConstraint(SpringLayout.NORTH, termBox, 0, SpringLayout.NORTH, sessionField);
+		springLayout.putConstraint(SpringLayout.WEST, termBox, 6, SpringLayout.EAST, sessionBox);
+		getContentPane().add(termBox);
 				
 				//sessions list
 						try {
@@ -189,7 +194,8 @@ private JTextField studentIDField;
 							String year= rs.getString("year");
 							String term= rs.getString("term");
 							
-							sessionBox.addItem(term+" "+year);
+							termBox.addItem(term);
+							sessionBox.addItem(year);
 						}
 						conn.close();
 						}catch(Exception ex) {
@@ -224,9 +230,9 @@ private JTextField studentIDField;
 			
 			while(rs.next()) {
 				String id= rs.getString("id");
-				String program= rs.getString("name");
+				//String program= rs.getString("name");
 				
-				programBox.addItem(id+" "+program);
+				programBox.addItem(id);
 			}
 			conn.close();
 			}catch(Exception ex) {
@@ -269,6 +275,7 @@ private JTextField studentIDField;
 			 address= rs.getString("address");
 			 pincode= rs.getString("pincode");
 			 program= rs.getString("program");
+			 term= rs.getString("term");
 			session= rs.getString("session");
 			 username= rs.getString("username");
 			password= rs.getString("password");
@@ -294,8 +301,10 @@ private JTextField studentIDField;
 		addressArea.setText(address);
 		postalField.setText(pincode);
 		programField.setText(program);
-		sessionField.setText(session);
+		sessionField.setText(term+" "+session);
 		userField.setText(username);
+		
+		
 		
 		
 		
@@ -335,6 +344,7 @@ btnApprove.addActionListener(new ActionListener() {
 			String postalCode= postalField.getText();
 			
 			String program= (String) programBox.getSelectedItem();
+			String term= (String) termBox.getSelectedItem();
 			String session= (String) sessionBox.getSelectedItem();
 			String username= userField.getText();
 			
@@ -343,8 +353,8 @@ btnApprove.addActionListener(new ActionListener() {
 			DatabaseConnection connection = new DatabaseConnection();
 			Connection conn = connection.openConnection();
 			
-			String sql1 ="INSERT INTO student_accessible (studentid,name,dob,gender,address, pincode, session,program, username, password)"+
-			"VALUES ('"+studentId+"','"+name+"','"+dateOfBirth+"','"+gender+"','"+address+"','"+postalCode+"','"+session+"','"+program+"','"+username+"','"+password+"')";
+			String sql1 ="INSERT INTO student_accessible (studentid,name,dob,gender,address, pincode,term, session,program, username, password)"+
+			"VALUES ('"+studentId+"','"+name+"','"+dateOfBirth+"','"+gender+"','"+address+"','"+postalCode+"','"+term+"','"+session+"','"+program+"','"+username+"','"+password+"')";
 			PreparedStatement statement1 = conn.prepareStatement(sql1);
 			
 		statement1.executeUpdate(sql1);
@@ -355,8 +365,9 @@ btnApprove.addActionListener(new ActionListener() {
 		
 		statement2.executeUpdate(sql2);
 		statement2.close();
-		
-		conn.close();
+			
+	conn.close();
+	
 		JOptionPane.showMessageDialog(null, "Student Approved");
 		dispose();
 

@@ -164,19 +164,24 @@ public class StudentSignUp extends JFrame {
 			
 			while(rs.next()) {
 				String id= rs.getString("id");
-				String program= rs.getString("name");
+				//String program= rs.getString("name");
 				
-				programBox.addItem(id+" "+program);
+				programBox.addItem(id);
 			}
 			conn.close();
 			}catch(Exception ex) {
 				ex.printStackTrace();
 			}
 		
-		JComboBox sessionBox = new JComboBox();
-		springLayout.putConstraint(SpringLayout.NORTH, sessionBox, -3, SpringLayout.NORTH, lblDateOfBirth);
-		springLayout.putConstraint(SpringLayout.WEST, sessionBox, 0, SpringLayout.WEST, programBox);
+		JComboBox termBox = new JComboBox();
+		springLayout.putConstraint(SpringLayout.NORTH, termBox, -3, SpringLayout.NORTH, lblDateOfBirth);
+		springLayout.putConstraint(SpringLayout.WEST, termBox, 0, SpringLayout.WEST, programBox);
 		
+		
+		 JComboBox sessionBox = new JComboBox();
+		 springLayout.putConstraint(SpringLayout.NORTH, sessionBox, -3, SpringLayout.NORTH, lblDateOfBirth);
+		 springLayout.putConstraint(SpringLayout.WEST, sessionBox, 6, SpringLayout.EAST, termBox);
+		 getContentPane().add(sessionBox);
 		//sessions list
 		try {
 		DatabaseConnection connection = new DatabaseConnection();
@@ -190,13 +195,14 @@ public class StudentSignUp extends JFrame {
 			String year= rs.getString("year");
 			String term= rs.getString("term");
 			
-			sessionBox.addItem(term+" "+year);
+			termBox.addItem(term);
+			sessionBox.addItem(year);
 		}
 		conn.close();
 		}catch(Exception ex) {
 			ex.printStackTrace();
 		}
-		getContentPane().add(sessionBox);
+		getContentPane().add(termBox);
 		
 		userField = new JTextField();
 		springLayout.putConstraint(SpringLayout.NORTH, userField, -3, SpringLayout.NORTH, lblGender);
@@ -282,6 +288,8 @@ public class StudentSignUp extends JFrame {
 		 getContentPane().add(addressField2);
 		 addressField2.setColumns(10);
 		 
+		
+		 
 		 //submit button
 		 btnSubmit.addActionListener(new ActionListener() {
 			
@@ -302,7 +310,9 @@ public class StudentSignUp extends JFrame {
 					String postalCode= postalField.getText();
 					String phNum= phoneField.getText();
 					String program= (String) programBox.getSelectedItem();
-					String session= (String) sessionBox.getSelectedItem();
+					
+					String term= (String) termBox.getSelectedItem();
+					String session=(String)sessionBox.getSelectedItem();
 					String username= userField.getText();
 					String password= passwordField.getText();
 					String studentId= studentIDField.getText();
@@ -332,8 +342,8 @@ public class StudentSignUp extends JFrame {
 						JOptionPane.showMessageDialog(null, "Your password must contain one digit,\n one lowercase character,\n one uppercase character,\n one special symbol using \"@#$%\",\n length of password between 6-20 characters");	
 					}
 					else {
-					String sql=  "INSERT INTO student_data (studentid,name,dob,gender,address, pincode, phone, session,program, username, password, status)"+ 
-					"VALUES ('"+studentId+"','"+name+"','"+dob+"','"+gender+"','"+address1+" "+address2+"','"+postalCode+"','"+phNum+"','"+session+"','"+program+"','"+username+"','"+password+"','"+status+"')";
+					String sql=  "INSERT INTO student_data (studentid,name,dob,gender,address, pincode, phone,term, session,program, username, password, status)"+ 
+					"VALUES ('"+studentId+"','"+name+"','"+dob+"','"+gender+"','"+address1+" "+address2+"','"+postalCode+"','"+phNum+"','"+term+"','"+session+"','"+program+"','"+username+"','"+password+"','"+status+"')";
 					PreparedStatement statement = conn.prepareStatement(sql);
 					 statement.executeUpdate(sql);
 					conn.close();
