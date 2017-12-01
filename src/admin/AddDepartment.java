@@ -24,7 +24,7 @@ public class AddDepartment extends JFrame{
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(null);
-		setSize(300,125);
+		setSize(300,150);
 		setVisible(true);
 		getContentPane().setBackground(SystemColor.inactiveCaptionBorder);
 		SpringLayout springLayout = new SpringLayout();
@@ -55,6 +55,8 @@ public class AddDepartment extends JFrame{
 		departmentNameField.setColumns(10);
 		
 		JButton btnSubmit = new JButton("Submit");
+		springLayout.putConstraint(SpringLayout.SOUTH, btnSubmit, -10, SpringLayout.SOUTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.EAST, btnSubmit, -81, SpringLayout.EAST, getContentPane());
 		getContentPane().add(btnSubmit);
 		
 		//btn submit code
@@ -76,6 +78,7 @@ public class AddDepartment extends JFrame{
 							
 							JOptionPane.showMessageDialog(null, "Department successfully created");
 							dispose();
+							AdminDashboard dashboard= new AdminDashboard();
 				}catch(Exception ex) {
 					ex.printStackTrace();
 					
@@ -85,9 +88,7 @@ public class AddDepartment extends JFrame{
 		});
 		
 		JButton btnCancel = new JButton("Cancel");
-		springLayout.putConstraint(SpringLayout.NORTH, btnSubmit, 0, SpringLayout.NORTH, btnCancel);
-		springLayout.putConstraint(SpringLayout.EAST, btnSubmit, -6, SpringLayout.WEST, btnCancel);
-		springLayout.putConstraint(SpringLayout.NORTH, btnCancel, 6, SpringLayout.SOUTH, departmentNameField);
+		springLayout.putConstraint(SpringLayout.NORTH, btnCancel, 0, SpringLayout.NORTH, btnSubmit);
 		springLayout.putConstraint(SpringLayout.EAST, btnCancel, 0, SpringLayout.EAST, departmentIdField);
 		getContentPane().add(btnCancel);
 		
@@ -97,6 +98,12 @@ public class AddDepartment extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
+				try {
+				AdminDashboard dashboard= new AdminDashboard();
+				}catch(Exception ex) {
+					ex.printStackTrace();
+				}
+				
 				
 			}
 		});

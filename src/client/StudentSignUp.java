@@ -4,12 +4,14 @@ import javax.swing.JFrame;
 import javax.swing.SpringLayout;
 import javax.swing.border.Border;
 
-import org.omg.CORBA.PUBLIC_MEMBER;
+//import org.omg.CORBA.PUBLIC_MEMBER;
 
 import com.mysql.jdbc.ResultSet;
+import com.toedter.calendar.*;
 
 import admin.AdminDashboard;
 import main.LoginChoose;
+
 import validation.SignUpValidation;
 import javabeans.DatabaseConnection;
 
@@ -32,9 +34,11 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import javax.swing.JFormattedTextField;
+import com.toedter.calendar.JDateChooser;
 
 public class StudentSignUp extends JFrame {
 	private JTextField nameField;
@@ -43,7 +47,6 @@ public class StudentSignUp extends JFrame {
 	private JTextField userField;
 	private JPasswordField passwordField;
 	private JTextField studentIDField;
-	private JTextField dobField;
 	private JTextField addressField1;
 	private JTextField addressField2;
 
@@ -83,12 +86,11 @@ public class StudentSignUp extends JFrame {
 		getContentPane().add(lblGender);
 		
 		JRadioButton rdbtnMale = new JRadioButton("Male");
-		springLayout.putConstraint(SpringLayout.NORTH, rdbtnMale, -4, SpringLayout.NORTH, lblGender);
+		springLayout.putConstraint(SpringLayout.NORTH, lblGender, 4, SpringLayout.NORTH, rdbtnMale);
 		springLayout.putConstraint(SpringLayout.WEST, rdbtnMale, 0, SpringLayout.WEST, nameField);
 		getContentPane().add(rdbtnMale);
 		
 		JRadioButton rdbtnFemale = new JRadioButton("Female");
-		springLayout.putConstraint(SpringLayout.NORTH, rdbtnFemale, -4, SpringLayout.NORTH, lblGender);
 		springLayout.putConstraint(SpringLayout.WEST, rdbtnFemale, 6, SpringLayout.EAST, rdbtnMale);
 		getContentPane().add(rdbtnFemale);
 		
@@ -101,7 +103,6 @@ public class StudentSignUp extends JFrame {
 				
 				
 		JLabel lblAddress = new JLabel("Address:");
-		springLayout.putConstraint(SpringLayout.SOUTH, lblGender, -22, SpringLayout.NORTH, lblAddress);
 		springLayout.putConstraint(SpringLayout.NORTH, lblAddress, 199, SpringLayout.NORTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, lblAddress, 0, SpringLayout.WEST, lblName);
 		getContentPane().add(lblAddress);
@@ -140,11 +141,11 @@ public class StudentSignUp extends JFrame {
 		getContentPane().add(lblSession);
 		
 		JLabel lblUsername = new JLabel("Username:");
-		springLayout.putConstraint(SpringLayout.NORTH, lblUsername, 0, SpringLayout.NORTH, lblGender);
 		springLayout.putConstraint(SpringLayout.WEST, lblUsername, 0, SpringLayout.WEST, lblProgram);
 		getContentPane().add(lblUsername);
 		
 		JLabel lblPassword = new JLabel("Password:");
+		springLayout.putConstraint(SpringLayout.SOUTH, lblUsername, -22, SpringLayout.NORTH, lblPassword);
 		springLayout.putConstraint(SpringLayout.NORTH, lblPassword, 0, SpringLayout.NORTH, lblAddress);
 		springLayout.putConstraint(SpringLayout.WEST, lblPassword, 0, SpringLayout.WEST, lblProgram);
 		getContentPane().add(lblPassword);
@@ -205,12 +206,12 @@ public class StudentSignUp extends JFrame {
 		getContentPane().add(termBox);
 		
 		userField = new JTextField();
-		springLayout.putConstraint(SpringLayout.NORTH, userField, -3, SpringLayout.NORTH, lblGender);
 		springLayout.putConstraint(SpringLayout.WEST, userField, 0, SpringLayout.WEST, programBox);
 		getContentPane().add(userField);
 		userField.setColumns(10);
 		
 		passwordField = new JPasswordField();
+		springLayout.putConstraint(SpringLayout.SOUTH, userField, -16, SpringLayout.NORTH, passwordField);
 		springLayout.putConstraint(SpringLayout.NORTH, passwordField, -3, SpringLayout.NORTH, lblAddress);
 		springLayout.putConstraint(SpringLayout.WEST, passwordField, 0, SpringLayout.WEST, programBox);
 		springLayout.putConstraint(SpringLayout.EAST, passwordField, 0, SpringLayout.EAST, userField);
@@ -268,14 +269,10 @@ public class StudentSignUp extends JFrame {
 		 String studentIdentity= String.valueOf(studentID);
 		 studentIDField.setText(studentIdentity);
 		 
-		 dobField = new JTextField();
-		 springLayout.putConstraint(SpringLayout.NORTH, dobField, -3, SpringLayout.NORTH, lblDateOfBirth);
-		 springLayout.putConstraint(SpringLayout.EAST, dobField, 0, SpringLayout.EAST, nameField);
-		 dobField.setColumns(12);
-		 getContentPane().add(dobField);
-		 
 		 addressField1 = new JTextField();
-		 springLayout.putConstraint(SpringLayout.NORTH, addressField1, 11, SpringLayout.SOUTH, rdbtnMale);
+		 springLayout.putConstraint(SpringLayout.NORTH, addressField1, 193, SpringLayout.NORTH, getContentPane());
+		 springLayout.putConstraint(SpringLayout.SOUTH, rdbtnFemale, -11, SpringLayout.NORTH, addressField1);
+		 springLayout.putConstraint(SpringLayout.SOUTH, rdbtnMale, -11, SpringLayout.NORTH, addressField1);
 		 springLayout.putConstraint(SpringLayout.WEST, addressField1, 0, SpringLayout.WEST, nameField);
 		 springLayout.putConstraint(SpringLayout.EAST, addressField1, 0, SpringLayout.EAST, nameField);
 		 getContentPane().add(addressField1);
@@ -288,17 +285,24 @@ public class StudentSignUp extends JFrame {
 		 getContentPane().add(addressField2);
 		 addressField2.setColumns(10);
 		 
-		
-		 
+		JDateChooser dobField= new JDateChooser();
+		springLayout.putConstraint(SpringLayout.WEST, dobField, 0, SpringLayout.WEST, nameField);
+		springLayout.putConstraint(SpringLayout.SOUTH, dobField, 0, SpringLayout.SOUTH, lblDateOfBirth);
+		 getContentPane().add(dobField);
 		 //submit button
 		 btnSubmit.addActionListener(new ActionListener() {
 			
+			 
+			 
+			 DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
 					String name=nameField.getText();
-					String dob= dobField.getText();
-					String gender=null;
+				String dob= df.format(dobField.getDate());
+					
+				String gender=null;
 					if(rdbtnMale.isSelected()) {
 						gender= "Male";
 					}

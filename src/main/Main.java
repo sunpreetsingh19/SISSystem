@@ -16,7 +16,9 @@ public class Main {
 			public void run() {
 				try {
 					LoginChoose frame = new LoginChoose();
-					 WebLookAndFeel.install();
+				//	 WebLookAndFeel.install();
+			        UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel"); 
+
 					
 				} catch (Exception e) {
 					e.printStackTrace();

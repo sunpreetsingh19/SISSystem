@@ -362,9 +362,14 @@ btnApprove.addActionListener(new ActionListener() {
 		
 		String sql2= "delete from student_data Where studentid='"+studentId+"'";
 		PreparedStatement statement2 = conn.prepareStatement(sql2);
-		
 		statement2.executeUpdate(sql2);
 		statement2.close();
+		
+		String sql3="insert INTO fees(student_id, present_due) VALUES ('"+studentId+"', '10000')";
+		PreparedStatement statement3 = conn.prepareStatement(sql3);
+		statement3.executeUpdate(sql3);
+		statement3.close();
+		
 			
 	conn.close();
 	

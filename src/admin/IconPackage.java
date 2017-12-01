@@ -39,4 +39,10 @@ public ImageIcon IconsSearch() {
             this.getClass().getResource("/image/search.png"));
 	
 }
+public ImageIcon IconsReload() {
+	return new ImageIcon(
+            this.getClass().getResource("/image/reload.png"));
+	
+}
+
 }

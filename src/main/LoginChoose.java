@@ -123,7 +123,8 @@ public class LoginChoose extends JFrame{
 						ResultSet rs = (ResultSet) statement.executeQuery(sql);
 						 
 				            if (rs.next()) {
-						ClientDashboard dashboard= new ClientDashboard();
+				            	String studentId= rs.getString("studentid");
+						ClientDashboard dashboard= new ClientDashboard(studentId);
 						
 						dispose();
 				            }

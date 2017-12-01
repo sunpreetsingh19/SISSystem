@@ -10,24 +10,26 @@ import validation.CourseValidation;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerDateModel;
 import javax.swing.JButton;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import javax.swing.JComboBox;
+import com.toedter.calendar.JDateChooser;
+import com.toedter.components.JSpinField;
 
 public class AddCourse extends JFrame {
 	private JTextField courseNumberField;
 	private JTextField courseNameField;
-	private JTextField profNameField;
-	private JTextField startDateField;
-	private JTextField endDateField;
-	private JTextField startTimeField;
-	private JTextField endTimeField;
+	private JTextField professorIdField;
 	private JTextField vacancyField;
 
 	
@@ -65,76 +67,52 @@ public class AddCourse extends JFrame {
 		getContentPane().add(lblCourseName_1);
 		
 		courseNameField = new JTextField();
-		springLayout.putConstraint(SpringLayout.WEST, courseNameField, 108, SpringLayout.EAST, lblCourseName_1);
-		springLayout.putConstraint(SpringLayout.SOUTH, courseNameField, 0, SpringLayout.SOUTH, lblCourseName_1);
+		springLayout.putConstraint(SpringLayout.NORTH, courseNameField, -3, SpringLayout.NORTH, lblCourseName_1);
+		springLayout.putConstraint(SpringLayout.WEST, courseNameField, 0, SpringLayout.WEST, courseNumberField);
 		getContentPane().add(courseNameField);
 		courseNameField.setColumns(15);
 		
-		JLabel lblProfessorsName = new JLabel("Professor's Name");
-		springLayout.putConstraint(SpringLayout.NORTH, lblProfessorsName, 51, SpringLayout.SOUTH, lblCourseName_1);
-		springLayout.putConstraint(SpringLayout.WEST, lblProfessorsName, 0, SpringLayout.WEST, lblCourseName);
-		getContentPane().add(lblProfessorsName);
+		JLabel lblProfessorsId = new JLabel("Professor's Name");
+		springLayout.putConstraint(SpringLayout.WEST, lblProfessorsId, 0, SpringLayout.WEST, lblCourseName);
+		getContentPane().add(lblProfessorsId);
 		
-		profNameField = new JTextField();
-		springLayout.putConstraint(SpringLayout.NORTH, profNameField, 51, SpringLayout.SOUTH, courseNameField);
-		springLayout.putConstraint(SpringLayout.WEST, profNameField, 89, SpringLayout.EAST, lblProfessorsName);
-		springLayout.putConstraint(SpringLayout.EAST, profNameField, -203, SpringLayout.EAST, getContentPane());
-		getContentPane().add(profNameField);
-		profNameField.setColumns(10);
+		professorIdField = new JTextField();
+		springLayout.putConstraint(SpringLayout.NORTH, professorIdField, -3, SpringLayout.NORTH, lblProfessorsId);
+		springLayout.putConstraint(SpringLayout.WEST, professorIdField, 0, SpringLayout.WEST, courseNumberField);
+		springLayout.putConstraint(SpringLayout.EAST, professorIdField, 0, SpringLayout.EAST, courseNumberField);
+		getContentPane().add(professorIdField);
+		professorIdField.setColumns(10);
 		
 		
 		JLabel lblStartDate = new JLabel("Start Date");
-		springLayout.putConstraint(SpringLayout.NORTH, lblStartDate, 40, SpringLayout.SOUTH, lblProfessorsName);
+		springLayout.putConstraint(SpringLayout.NORTH, lblStartDate, 335, SpringLayout.NORTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, lblProfessorsId, -23, SpringLayout.NORTH, lblStartDate);
 		springLayout.putConstraint(SpringLayout.WEST, lblStartDate, 0, SpringLayout.WEST, lblCourseName);
 		getContentPane().add(lblStartDate);
-		
-		startDateField = new JTextField();
-		springLayout.putConstraint(SpringLayout.WEST, startDateField, 122, SpringLayout.EAST, lblStartDate);
-		springLayout.putConstraint(SpringLayout.SOUTH, startDateField, 0, SpringLayout.SOUTH, lblStartDate);
-		getContentPane().add(startDateField);
-		startDateField.setColumns(10);
 		
 		JLabel lblEndDate = new JLabel("End Date");
 		springLayout.putConstraint(SpringLayout.NORTH, lblEndDate, 28, SpringLayout.SOUTH, lblStartDate);
 		springLayout.putConstraint(SpringLayout.WEST, lblEndDate, 0, SpringLayout.WEST, lblCourseName);
 		getContentPane().add(lblEndDate);
 		
-		endDateField = new JTextField();
-		springLayout.putConstraint(SpringLayout.NORTH, endDateField, 0, SpringLayout.NORTH, lblEndDate);
-		springLayout.putConstraint(SpringLayout.WEST, endDateField, 128, SpringLayout.EAST, lblEndDate);
-		getContentPane().add(endDateField);
-		endDateField.setColumns(10);
-		
 		JLabel lblStartTime = new JLabel("Start Time");
 		springLayout.putConstraint(SpringLayout.NORTH, lblStartTime, 29, SpringLayout.SOUTH, lblEndDate);
 		springLayout.putConstraint(SpringLayout.WEST, lblStartTime, 0, SpringLayout.WEST, lblCourseName);
 		getContentPane().add(lblStartTime);
 		
-		startTimeField = new JTextField();
-		springLayout.putConstraint(SpringLayout.NORTH, startTimeField, -3, SpringLayout.NORTH, lblStartTime);
-		springLayout.putConstraint(SpringLayout.WEST, startTimeField, 123, SpringLayout.EAST, lblStartTime);
-		getContentPane().add(startTimeField);
-		startTimeField.setColumns(10);
-		
-		endTimeField = new JTextField();
-		springLayout.putConstraint(SpringLayout.NORTH, endTimeField, 23, SpringLayout.SOUTH, startTimeField);
-		getContentPane().add(endTimeField);
-		endTimeField.setColumns(10);
-		
 		JLabel lblEndTime = new JLabel("End Time");
-		springLayout.putConstraint(SpringLayout.WEST, endTimeField, 129, SpringLayout.EAST, lblEndTime);
 		springLayout.putConstraint(SpringLayout.WEST, lblEndTime, 0, SpringLayout.WEST, lblCourseName);
-		springLayout.putConstraint(SpringLayout.SOUTH, lblEndTime, 0, SpringLayout.SOUTH, endTimeField);
+		springLayout.putConstraint(SpringLayout.SOUTH, lblEndTime, -141, SpringLayout.SOUTH, getContentPane());
 		getContentPane().add(lblEndTime);
 		
 		JLabel lblVacancy = new JLabel("Vacancy");
-		springLayout.putConstraint(SpringLayout.NORTH, lblVacancy, 32, SpringLayout.SOUTH, lblEndTime);
+		springLayout.putConstraint(SpringLayout.NORTH, lblVacancy, 20, SpringLayout.SOUTH, lblEndTime);
 		springLayout.putConstraint(SpringLayout.WEST, lblVacancy, 0, SpringLayout.WEST, lblCourseName);
 		getContentPane().add(lblVacancy);
 		
 		vacancyField = new JTextField();
-		springLayout.putConstraint(SpringLayout.NORTH, vacancyField, 26, SpringLayout.SOUTH, endTimeField);
-		springLayout.putConstraint(SpringLayout.WEST, vacancyField, 132, SpringLayout.EAST, lblVacancy);
+		springLayout.putConstraint(SpringLayout.NORTH, vacancyField, -3, SpringLayout.NORTH, lblVacancy);
+		springLayout.putConstraint(SpringLayout.WEST, vacancyField, 0, SpringLayout.WEST, courseNumberField);
 		springLayout.putConstraint(SpringLayout.EAST, vacancyField, -203, SpringLayout.EAST, getContentPane());
 		getContentPane().add(vacancyField);
 		vacancyField.setColumns(10);
@@ -158,6 +136,76 @@ public class AddCourse extends JFrame {
 		springLayout.putConstraint(SpringLayout.NORTH, courseIdBox, -3, SpringLayout.NORTH, lblCourseName);
 		springLayout.putConstraint(SpringLayout.WEST, courseIdBox, 0, SpringLayout.WEST, courseNumberField);
 		getContentPane().add(courseIdBox);
+		
+		JDateChooser startDateField = new JDateChooser();
+		springLayout.putConstraint(SpringLayout.WEST, startDateField, 0, SpringLayout.WEST, courseNumberField);
+		springLayout.putConstraint(SpringLayout.SOUTH, startDateField, 0, SpringLayout.SOUTH, lblStartDate);
+		getContentPane().add(startDateField);
+		
+		JDateChooser endDateField = new JDateChooser();
+		springLayout.putConstraint(SpringLayout.WEST, endDateField, 0, SpringLayout.WEST, courseNumberField);
+		springLayout.putConstraint(SpringLayout.SOUTH, endDateField, 0, SpringLayout.SOUTH, lblEndDate);
+		getContentPane().add(endDateField);
+		
+		JSpinner startTimeSpinner = new JSpinner(new SpinnerDateModel());
+		JSpinner.DateEditor de_startTimeSpinner = new JSpinner.DateEditor(startTimeSpinner, "hh:mm a");
+		startTimeSpinner.setEditor(de_startTimeSpinner);
+		springLayout.putConstraint(SpringLayout.WEST, startTimeSpinner, 0, SpringLayout.WEST, courseNumberField);
+		springLayout.putConstraint(SpringLayout.SOUTH, startTimeSpinner, 0, SpringLayout.SOUTH, lblStartTime);
+		getContentPane().add(startTimeSpinner);
+		
+		JSpinner endTimeSpinner = new JSpinner(new SpinnerDateModel());
+		JSpinner.DateEditor de_endTimeSpinner = new JSpinner.DateEditor(endTimeSpinner, "hh:mm a");
+		endTimeSpinner.setEditor(de_endTimeSpinner);
+		springLayout.putConstraint(SpringLayout.WEST, endTimeSpinner, 0, SpringLayout.WEST, courseNumberField);
+		springLayout.putConstraint(SpringLayout.SOUTH, endTimeSpinner, 0, SpringLayout.SOUTH, lblEndTime);
+		getContentPane().add(endTimeSpinner);
+		
+		JLabel lblTerm = new JLabel("Term");
+		springLayout.putConstraint(SpringLayout.WEST, lblTerm, 0, SpringLayout.WEST, lblCourseName);
+		springLayout.putConstraint(SpringLayout.SOUTH, lblTerm, -26, SpringLayout.NORTH, lblProfessorsId);
+		getContentPane().add(lblTerm);
+		
+		JComboBox termComboBox = new JComboBox();
+		springLayout.putConstraint(SpringLayout.WEST, termComboBox, 0, SpringLayout.WEST, courseNumberField);
+		springLayout.putConstraint(SpringLayout.SOUTH, termComboBox, 0, SpringLayout.SOUTH, lblTerm);
+		getContentPane().add(termComboBox);
+		
+	// fetching terms
+		
+		try {
+			DatabaseConnection connection = new DatabaseConnection();
+			Connection conn = connection.openConnection();
+			String sql ="Select * from sessions";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			ResultSet rs = (ResultSet) statement.executeQuery(sql);
+			
+			while(rs.next()) {
+				String term= rs.getString("term");
+				//String program= rs.getString("name");
+				
+			termComboBox.addItem(term);
+			}
+			conn.close();
+			}catch(Exception ex) {
+				ex.printStackTrace();
+			}
+		//cancel button
+		btnCancel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					new AdminDashboard();
+					dispose();
+				}
+				catch(Exception ex) {
+					ex.printStackTrace();
+				}
+				
+			}
+		});
+		
 	
 		try {
 			DatabaseConnection connection = new DatabaseConnection();
@@ -182,7 +230,7 @@ public class AddCourse extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					AdminDashboard admin= new AdminDashboard();
+					new AdminDashboard();
 					dispose();
 				}
 				catch(Exception ex) {
@@ -195,18 +243,20 @@ public class AddCourse extends JFrame {
 		//button submit
 		btnSubmit.addActionListener(new ActionListener() {
 			
-			
+			DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+			DateFormat df2 = new SimpleDateFormat("hh:mm a");
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String courseId= (String) courseIdBox.getSelectedItem();
 				String courseNum= courseNumberField.getText();
 				String courseName= courseNameField.getText();
-				String profName= profNameField.getText();
-				String startDate= startDateField.getText();
-				String endDate= endDateField.getText();
-				String startTime= startTimeField.getText();
-				String endTime= endTimeField.getText();
+				String profName= professorIdField.getText();
+				String startDate= df.format(startDateField.getDate());
+				String endDate= df.format(endDateField.getDate());
+				String startTime= df2.format(startTimeSpinner.getValue());
+				String endTime= df2.format(endTimeSpinner.getValue());
 				String Vacancy= vacancyField.getText();
+				String term= (String)termComboBox.getSelectedItem();
 				
 				CourseValidation validateCourse= new CourseValidation();
 				boolean courseNumb= validateCourse.courseNumber(courseNum);
@@ -225,7 +275,7 @@ public class AddCourse extends JFrame {
 				try {
 					DatabaseConnection connection = new DatabaseConnection();
 					Connection conn = connection.openConnection();
-					String sql=  "INSERT INTO courses (course_id,course_name,professor_name,start_date,end_date, start_time, end_time, vacancy) VALUES ('"+courseId+" "+courseNum+"','"+courseName+"','"+profName+"','"+startDate+"','"+endDate+"','"+startTime+"','"+endTime+"','"+Vacancy+"')";
+					String sql=  "INSERT INTO courses (course_id,course_num, course_description, term, professor_id,start_date,end_date, start_time, end_time, vacancy) VALUES ('"+courseId+"', '"+courseNum+"','"+courseName+"', '"+term+"','"+profName+"','"+startDate+"','"+endDate+"','"+startTime+"','"+endTime+"','"+Vacancy+"')";
 							PreparedStatement statement = conn.prepareStatement(sql);
 							 statement.executeUpdate(sql);
 							conn.close();
@@ -233,7 +283,7 @@ public class AddCourse extends JFrame {
 							AdminDashboard admin= new AdminDashboard();
 							dispose();
 				}catch(Exception ex) {
-					ex.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Course Already Added");
 					
 				}
 				}
