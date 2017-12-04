@@ -36,6 +36,7 @@ import java.awt.Dimension;
 
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
+import java.awt.Font;
 
 public class AdminDashboard extends JFrame implements ActionListener {
 	private JTextField searchStudentIdField;
@@ -87,6 +88,26 @@ public class AdminDashboard extends JFrame implements ActionListener {
 		tabbedPane.addTab("Dashboard", icons.IconsDash(), Dashboard);
 		SpringLayout sl_Dashboard = new SpringLayout();
 		Dashboard.setLayout(sl_Dashboard);
+		
+		JLabel lblWelcomeToStudent = new JLabel("Welcome\r\n");
+		sl_Dashboard.putConstraint(SpringLayout.NORTH, lblWelcomeToStudent, 60, SpringLayout.NORTH, Dashboard);
+		sl_Dashboard.putConstraint(SpringLayout.WEST, lblWelcomeToStudent, 322, SpringLayout.WEST, Dashboard);
+		sl_Dashboard.putConstraint(SpringLayout.SOUTH, lblWelcomeToStudent, 145, SpringLayout.NORTH, Dashboard);
+		sl_Dashboard.putConstraint(SpringLayout.EAST, lblWelcomeToStudent, -264, SpringLayout.EAST, Dashboard);
+		lblWelcomeToStudent.setFont(new Font("Tahoma", Font.BOLD, 34));
+		Dashboard.add(lblWelcomeToStudent);
+		
+		JLabel lblTo = new JLabel("To");
+		sl_Dashboard.putConstraint(SpringLayout.SOUTH, lblTo, -230, SpringLayout.SOUTH, Dashboard);
+		sl_Dashboard.putConstraint(SpringLayout.EAST, lblTo, -336, SpringLayout.EAST, Dashboard);
+		lblTo.setFont(new Font("Tahoma", Font.BOLD, 34));
+		Dashboard.add(lblTo);
+		
+		JLabel lblStudentInformationSystem = new JLabel("Student Information System");
+		sl_Dashboard.putConstraint(SpringLayout.NORTH, lblStudentInformationSystem, 73, SpringLayout.SOUTH, lblTo);
+		sl_Dashboard.putConstraint(SpringLayout.EAST, lblStudentInformationSystem, -126, SpringLayout.EAST, Dashboard);
+		lblStudentInformationSystem.setFont(new Font("Tahoma", Font.BOLD, 34));
+		Dashboard.add(lblStudentInformationSystem);
 
 		JPanel courseList = new JPanel();
 		courseList.setBackground(SystemColor.inactiveCaptionBorder);

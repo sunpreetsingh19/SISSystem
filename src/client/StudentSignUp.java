@@ -39,6 +39,7 @@ import java.text.SimpleDateFormat;
 
 import javax.swing.JFormattedTextField;
 import com.toedter.calendar.JDateChooser;
+import javax.swing.DefaultComboBoxModel;
 
 public class StudentSignUp extends JFrame {
 	private JTextField nameField;
@@ -49,6 +50,7 @@ public class StudentSignUp extends JFrame {
 	private JTextField studentIDField;
 	private JTextField addressField1;
 	private JTextField addressField2;
+	private JTextField textFieldSecurityAnswer;
 
 	 public StudentSignUp() {
 		
@@ -251,14 +253,14 @@ public class StudentSignUp extends JFrame {
 		getContentPane().add(lblEnterTheCredentials);
 		
 		JLabel lblStudentId = new JLabel("Student ID:");
-		springLayout.putConstraint(SpringLayout.NORTH, lblStudentId, 0, SpringLayout.NORTH, lblPostalCode);
 		springLayout.putConstraint(SpringLayout.WEST, lblStudentId, 0, SpringLayout.WEST, lblProgram);
 		getContentPane().add(lblStudentId);
 		
 		studentIDField = new JTextField();
-		studentIDField.setEditable(false);
+		springLayout.putConstraint(SpringLayout.NORTH, lblStudentId, 3, SpringLayout.NORTH, studentIDField);
+		springLayout.putConstraint(SpringLayout.NORTH, studentIDField, 16, SpringLayout.SOUTH, passwordField);
 		springLayout.putConstraint(SpringLayout.WEST, studentIDField, 0, SpringLayout.WEST, programBox);
-		springLayout.putConstraint(SpringLayout.SOUTH, studentIDField, 0, SpringLayout.SOUTH, lblPostalCode);
+		studentIDField.setEditable(false);
 		getContentPane().add(studentIDField);
 		studentIDField.setColumns(10);
 		 setVisible(true);
@@ -289,6 +291,28 @@ public class StudentSignUp extends JFrame {
 		springLayout.putConstraint(SpringLayout.WEST, dobField, 0, SpringLayout.WEST, nameField);
 		springLayout.putConstraint(SpringLayout.SOUTH, dobField, 0, SpringLayout.SOUTH, lblDateOfBirth);
 		 getContentPane().add(dobField);
+		 
+		 JLabel lblSecurityQuestion = new JLabel("Security Question");
+		 springLayout.putConstraint(SpringLayout.NORTH, lblSecurityQuestion, 21, SpringLayout.SOUTH, lblStudentId);
+		 springLayout.putConstraint(SpringLayout.WEST, lblSecurityQuestion, 0, SpringLayout.WEST, lblProgram);
+		 getContentPane().add(lblSecurityQuestion);
+		 
+		 JComboBox securityCombo = new JComboBox();
+		 springLayout.putConstraint(SpringLayout.NORTH, securityCombo, -3, SpringLayout.NORTH, lblSecurityQuestion);
+		 springLayout.putConstraint(SpringLayout.WEST, securityCombo, 0, SpringLayout.WEST, programBox);
+		 securityCombo.setModel(new DefaultComboBoxModel(new String[] {"What is your father name?", "What is your Mother Maiden Name?", "Which is your birth place?", "Who is your childhood's friend?"}));
+		 getContentPane().add(securityCombo);
+		 
+		 JLabel lblAnswer = new JLabel("Answer");
+		 springLayout.putConstraint(SpringLayout.NORTH, lblAnswer, 0, SpringLayout.NORTH, lblContactNo);
+		 springLayout.putConstraint(SpringLayout.WEST, lblAnswer, 0, SpringLayout.WEST, lblProgram);
+		 getContentPane().add(lblAnswer);
+		 
+		 textFieldSecurityAnswer = new JTextField();
+		 springLayout.putConstraint(SpringLayout.NORTH, textFieldSecurityAnswer, -3, SpringLayout.NORTH, lblContactNo);
+		 springLayout.putConstraint(SpringLayout.WEST, textFieldSecurityAnswer, 0, SpringLayout.WEST, programBox);
+		 getContentPane().add(textFieldSecurityAnswer);
+		 textFieldSecurityAnswer.setColumns(10);
 		 //submit button
 		 btnSubmit.addActionListener(new ActionListener() {
 			
@@ -321,7 +345,8 @@ public class StudentSignUp extends JFrame {
 					String password= passwordField.getText();
 					String studentId= studentIDField.getText();
 					String status= "pending";
-					
+					String securityQues= (String)securityCombo.getSelectedItem();
+					String securityAns= textFieldSecurityAnswer.getText();
 					
 					DatabaseConnection connection = new DatabaseConnection();
 					Connection conn = connection.openConnection();
@@ -346,8 +371,8 @@ public class StudentSignUp extends JFrame {
 						JOptionPane.showMessageDialog(null, "Your password must contain one digit,\n one lowercase character,\n one uppercase character,\n one special symbol using \"@#$%\",\n length of password between 6-20 characters");	
 					}
 					else {
-					String sql=  "INSERT INTO student_data (studentid,name,dob,gender,address, pincode, phone,term, session,program, username, password, status)"+ 
-					"VALUES ('"+studentId+"','"+name+"','"+dob+"','"+gender+"','"+address1+" "+address2+"','"+postalCode+"','"+phNum+"','"+term+"','"+session+"','"+program+"','"+username+"','"+password+"','"+status+"')";
+					String sql=  "INSERT INTO student_data (studentid,name,dob,gender,address, pincode, phone,term, session,program, username, password, status, security_ques, security_ans)"+ 
+					"VALUES ('"+studentId+"','"+name+"','"+dob+"','"+gender+"','"+address1+" "+address2+"','"+postalCode+"','"+phNum+"','"+term+"','"+session+"','"+program+"','"+username+"','"+password+"','"+status+"','"+securityQues+"', '"+securityAns+"')";
 					PreparedStatement statement = conn.prepareStatement(sql);
 					 statement.executeUpdate(sql);
 					conn.close();

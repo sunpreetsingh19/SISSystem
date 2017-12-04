@@ -25,7 +25,7 @@ import javax.swing.JComboBox;
 
 public class AddAStudent extends JDialog {
 String studentId= StudentRequestData.studentId;
-String studentID,name, dateOfBirth,gender,address, pincode, program,term,session, username, password;	
+String studentID,name, dateOfBirth,gender,address, pincode, program,term,session, username, password, securityQues, securityAns;	
 private JTextField studentIDField;
 	
 	private JTextField studentNameField;
@@ -279,8 +279,8 @@ private JTextField studentIDField;
 			session= rs.getString("session");
 			 username= rs.getString("username");
 			password= rs.getString("password");
-			
-			
+			securityQues=rs.getString("security_ques");
+			securityAns=rs.getString("security_ans");
 				            }
 	            else {
 					JOptionPane.showMessageDialog(null, "Error");
@@ -353,8 +353,8 @@ btnApprove.addActionListener(new ActionListener() {
 			DatabaseConnection connection = new DatabaseConnection();
 			Connection conn = connection.openConnection();
 			
-			String sql1 ="INSERT INTO student_accessible (studentid,name,dob,gender,address, pincode,term, session,program, username, password)"+
-			"VALUES ('"+studentId+"','"+name+"','"+dateOfBirth+"','"+gender+"','"+address+"','"+postalCode+"','"+term+"','"+session+"','"+program+"','"+username+"','"+password+"')";
+			String sql1 ="INSERT INTO student_accessible (studentid,name,dob,gender,address, pincode,term, session,program, username, password, security_ques, security_ans)"+
+			"VALUES ('"+studentId+"','"+name+"','"+dateOfBirth+"','"+gender+"','"+address+"','"+postalCode+"','"+term+"','"+session+"','"+program+"','"+username+"','"+password+"', '"+securityQues+"', '"+securityAns+"')";
 			PreparedStatement statement1 = conn.prepareStatement(sql1);
 			
 		statement1.executeUpdate(sql1);

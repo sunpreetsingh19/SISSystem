@@ -150,6 +150,21 @@ public class LoginChoose extends JFrame{
 		springLayout.putConstraint(SpringLayout.WEST, btnForgotPassword, 6, SpringLayout.EAST, btnLogin);
 		getContentPane().add(btnForgotPassword);
 		
+		btnForgotPassword.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try{
+					new ForgotPassword();
+					dispose();
+				}
+				catch(Exception ex){
+					JOptionPane.showMessageDialog(null, "null");
+				}
+				
+			}
+		});
+		
 		JButton btnSignUp = new JButton("Sign Up");
 		springLayout.putConstraint(SpringLayout.WEST, btnSignUp, 10, SpringLayout.WEST, getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, btnSignUp, 0, SpringLayout.SOUTH, btnLogin);

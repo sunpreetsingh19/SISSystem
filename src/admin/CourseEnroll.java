@@ -28,7 +28,7 @@ public class CourseEnroll extends JFrame implements ActionListener{
 	 String studentId;
 	JButton btnEnroll, btnCancel;
 	String courseId, courseNum;
-	String term;
+	String term, startTime, startDate;
 	String courseDescription, courseDesc;
 	
 	// SpringLayout sl_panel;
@@ -97,8 +97,9 @@ public class CourseEnroll extends JFrame implements ActionListener{
 				String courseNum= rs.getString("course_num");
 				 courseDescription= rs.getString("course_description");
 				String courseVacancy= rs.getString("vacancy");
+				startTime= rs.getString("start_time");
+				startDate= rs.getString("start_date");
 				
-					
 				courseTableModel.addRow(new Object[] { courseId, courseNum, courseDescription, courseVacancy});
 
 				}

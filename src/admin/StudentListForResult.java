@@ -98,6 +98,7 @@ public class StudentListForResult extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		try{
 		if(e.getSource()==btnSelect) {
 			int rowNum = studentResultTable.getSelectedRow();
 			studentId = (String) studentResultTable.getValueAt(rowNum, 0);
@@ -109,6 +110,8 @@ public class StudentListForResult extends JFrame implements ActionListener {
 		else if(e.getSource()==btnCancel) {
 			dispose();
 		}
-		
+		}catch(Exception ex){
+			JOptionPane.showMessageDialog(null, "Please select Student");
+		}
 	}
 }

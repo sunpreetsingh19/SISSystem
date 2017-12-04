@@ -24,6 +24,7 @@ public class AddCourseStudent extends JFrame {
 	String[] column = { "Course ID", "Course Number", "Course Description", "Term", "Start Date", "End Date",
 			"Start Time", "End Time", "Vacancy" };
 String studentId, courseId, courseNum, courseDesc,term;
+String startDate, startTime, endTime;
 	public AddCourseStudent(String studentId) {
 
 		this.studentId= studentId;
@@ -70,10 +71,10 @@ String studentId, courseId, courseNum, courseDesc,term;
 				String courseName = rs.getString("course_description");
 				String courseNum = rs.getString("course_num");
 				term = rs.getString("term");
-				String startDate = rs.getString("start_date");
+				startDate = rs.getString("start_date");
 				String endDate = rs.getString("end_date");
-				String startTime = rs.getString("start_time");
-				String endTime = rs.getString("end_time");
+				 startTime = rs.getString("start_time");
+				endTime = rs.getString("end_time");
 				String vacancy = rs.getString("vacancy");
 				
 				tableModelCourse.addRow(new Object[] { courseId, courseNum,courseName, term,startDate, endDate, startTime, endTime, vacancy });
@@ -87,6 +88,8 @@ String studentId, courseId, courseNum, courseDesc,term;
 
 		}
 		
+		
+		
 		btnAdd.addActionListener(new ActionListener() {
 			
 			@Override
@@ -95,6 +98,7 @@ String studentId, courseId, courseNum, courseDesc,term;
 				
 				if(courseTable.getSelectedRow()!=-1) {
 					int option=	JOptionPane.showConfirmDialog(null, "Are you sure you want to add course to Student List?", studentId, JOptionPane.YES_NO_OPTION);
+					
 					if(option==0) {
 					try {
 						int rowNum= courseTable.getSelectedRow();
@@ -132,6 +136,7 @@ String studentId, courseId, courseNum, courseDesc,term;
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				dispose();
 				new ClientDashboard(studentId);
 				
 			}

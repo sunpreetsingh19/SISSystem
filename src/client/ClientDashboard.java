@@ -6,7 +6,6 @@ import javax.swing.table.DefaultTableModel;
 
 import com.mysql.jdbc.ResultSet;
 
-
 import admin.AdminDashboard;
 import admin.IconPackage;
 import admin.StudentRequestData;
@@ -51,15 +50,15 @@ public class ClientDashboard extends JFrame {
 	private JTextField userNameField;
 	String studentName, studentId, studentAddress, studentContact, studentUserName, studentDepartment, present_due,
 			payment_Due, future_due;
-	String[] columns = { "Course ID","Course Number", "Course Description","Term"};
-	String  courseId, courseNum, term;
+	String[] columns = { "Course ID", "Course Number", "Course Description", "Term" };
+	String courseId, courseNum, term;
 	public static DefaultTableModel tableModelDepartment;
-	private JTable table;
+	private JTable courseTable;
 	private JTable table_1;
 	private JTable table_2;
 	private JTable table_3;
-	
-	String[] columnName = { "Course ID","Course Number", "Course Description", "Term", "Grades" };
+
+	String[] columnName = { "Course ID", "Course Number", "Course Description", "Term", "Grades" };
 	String[] columnNameFees = { "Fees" };
 	private JTable GPATable, RegisterCoursesTable;
 	public JPanel panelAcademics;
@@ -70,8 +69,10 @@ public class ClientDashboard extends JFrame {
 	private JTextField textField_2;
 	private JTextField textField_3;
 	private JTextField textField_4;
-	private JTextField textField_5;
+	private JTextField paymentAmountField;
 	private JTable tableRegisterCourse;
+	String[] columnFees = { "Present Dues" };
+	String[] courseModel={"Course ID","Course Number","Schedule"};
 	// public ClientDashboard clientDashboard;
 
 	// JTable jt;
@@ -143,12 +144,44 @@ public class ClientDashboard extends JFrame {
 		sl_panel_1.putConstraint(SpringLayout.SOUTH, scrollPane, 185, SpringLayout.NORTH, panel_1);
 		sl_panel_1.putConstraint(SpringLayout.EAST, scrollPane, 392, SpringLayout.WEST, panel_1);
 
-		table = new JTable();
-		table.setModel(new DefaultTableModel(new Object[][] { { null, null }, { null, null }, { null, null }, },
-				new String[] { "Course", "Schedule" }));
-		scrollPane.setViewportView(table);
-		table.setRowHeight(50);
+		
+		DefaultTableModel modelcourses= new DefaultTableModel(courseModel, 0);
+		courseTable = new JTable();
+		courseTable.setModel(modelcourses);
+		scrollPane.setViewportView(courseTable);
+		courseTable.setRowHeight(50);
 		panel_1.add(scrollPane);
+		
+		try {
+			DatabaseConnection connection = new DatabaseConnection();
+			Connection conn = connection.openConnection();
+
+			String sql = "Select * from course_enrollment Where student_id='" + studentId + "'";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			ResultSet rs = (ResultSet) statement.executeQuery(sql);
+
+			while (rs.next()) {
+
+				String courseId = rs.getString("course_id");
+				
+				String courseNum = rs.getString("course_num");
+				
+				String courseDesc= rs.getString("course_description");
+				
+
+				// action= new JCheckBox("Details");
+				modelcourses.addRow(new Object[] { courseId, courseNum, courseDesc });
+				// TableColumn selectColumn=
+				// studentData.getColumnModel().getColumn(4);
+				// selectColumn.setCellEditor(new DefaultCellEditor(action));
+			}
+
+			statement.close();
+			conn.close();
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
 		JPanel panel_2 = new JPanel();
 		sl_dashboard.putConstraint(SpringLayout.WEST, panel_2, 16, SpringLayout.EAST, panel);
@@ -286,17 +319,17 @@ public class ClientDashboard extends JFrame {
 
 		table_2 = new JTable();
 
-		JScrollPane scrollPane_1 = new JScrollPane();
+		JScrollPane feesPane = new JScrollPane();
 
+		DefaultTableModel feesModel = new DefaultTableModel(columnFees, 0);
 		table_3 = new JTable();
-		table_3.setModel(new DefaultTableModel(new Object[][] { { "Present Due", null }, { null, null }, },
-				new String[] { "Fees", "Value" }));
-		scrollPane_1.setViewportView(table_3);
+		table_3.setModel(feesModel);
+		feesPane.setViewportView(table_3);
 		SpringLayout sl_panel_2 = new SpringLayout();
-		sl_panel_2.putConstraint(SpringLayout.NORTH, scrollPane_1, 15, SpringLayout.NORTH, panel_2);
-		sl_panel_2.putConstraint(SpringLayout.WEST, scrollPane_1, 10, SpringLayout.WEST, panel_2);
-		sl_panel_2.putConstraint(SpringLayout.SOUTH, scrollPane_1, -54, SpringLayout.NORTH, table_1);
-		sl_panel_2.putConstraint(SpringLayout.EAST, scrollPane_1, 392, SpringLayout.WEST, panel_2);
+		sl_panel_2.putConstraint(SpringLayout.NORTH, feesPane, 15, SpringLayout.NORTH, panel_2);
+		sl_panel_2.putConstraint(SpringLayout.WEST, feesPane, 10, SpringLayout.WEST, panel_2);
+		sl_panel_2.putConstraint(SpringLayout.SOUTH, feesPane, -24, SpringLayout.NORTH, table_1);
+		sl_panel_2.putConstraint(SpringLayout.EAST, feesPane, 392, SpringLayout.WEST, panel_2);
 		sl_panel_2.putConstraint(SpringLayout.NORTH, table_2, 140, SpringLayout.NORTH, panel_2);
 		sl_panel_2.putConstraint(SpringLayout.WEST, table_2, 85, SpringLayout.WEST, panel_2);
 		sl_panel_2.putConstraint(SpringLayout.SOUTH, table_2, 141, SpringLayout.NORTH, panel_2);
@@ -308,7 +341,30 @@ public class ClientDashboard extends JFrame {
 		panel_2.setLayout(sl_panel_2);
 		panel_2.add(table_1);
 		panel_2.add(table_2);
-		panel_2.add(scrollPane_1);
+		panel_2.add(feesPane);
+		table_3.setRowHeight(50);
+		try {
+			DatabaseConnection connection = new DatabaseConnection();
+			Connection conn = connection.openConnection();
+
+			String sql = "Select * from fees Where student_id='" + studentId + "'";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			ResultSet rs = (ResultSet) statement.executeQuery(sql);
+
+			if (rs.next()) {
+
+				String fees = rs.getString("present_due");
+
+				feesModel.addRow(new Object[] { fees });
+
+			}
+
+			statement.close();
+			conn.close();
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
 		JPanel accEnquiry = new JPanel();
 		tabbedPane.addTab("Account Enquiry", null, accEnquiry, null);
@@ -325,39 +381,69 @@ public class ClientDashboard extends JFrame {
 		sl_accEnquiry.putConstraint(SpringLayout.WEST, lblAmount, 0, SpringLayout.WEST, lblDue);
 		accEnquiry.add(lblAmount);
 
-		textField_4.setEditable(false);
+		textField_4 = new JTextField();
+		textField_4.setEditable(true);
 		sl_accEnquiry.putConstraint(SpringLayout.NORTH, textField_4, 0, SpringLayout.NORTH, lblDue);
 		sl_accEnquiry.putConstraint(SpringLayout.WEST, textField_4, 62, SpringLayout.EAST, lblDue);
 		accEnquiry.add(textField_4);
 		textField_4.setColumns(10);
 
-		textField_5 = new JTextField();
-		sl_accEnquiry.putConstraint(SpringLayout.SOUTH, textField_5, 0, SpringLayout.SOUTH, lblAmount);
-		sl_accEnquiry.putConstraint(SpringLayout.EAST, textField_5, 0, SpringLayout.EAST, textField_4);
-		accEnquiry.add(textField_5);
-		textField_5.setColumns(10);
+		paymentAmountField = new JTextField();
+		sl_accEnquiry.putConstraint(SpringLayout.SOUTH, paymentAmountField, 0, SpringLayout.SOUTH, lblAmount);
+		sl_accEnquiry.putConstraint(SpringLayout.EAST, paymentAmountField, 0, SpringLayout.EAST, textField_4);
+		accEnquiry.add(paymentAmountField);
+		paymentAmountField.setColumns(10);
 
-		JComboBox comboBox = new JComboBox();
-		sl_accEnquiry.putConstraint(SpringLayout.NORTH, comboBox, 19, SpringLayout.SOUTH, textField_5);
-		sl_accEnquiry.putConstraint(SpringLayout.EAST, comboBox, 0, SpringLayout.EAST, textField_4);
-		accEnquiry.add(comboBox);
-		comboBox.addItem("Select");
-		comboBox.addItem("Pay By Credit");
-		comboBox.addItem("Pay By Debit");
+		JComboBox paymentMethodBox = new JComboBox();
+		sl_accEnquiry.putConstraint(SpringLayout.NORTH, paymentMethodBox, 19, SpringLayout.SOUTH, paymentAmountField);
+		sl_accEnquiry.putConstraint(SpringLayout.EAST, paymentMethodBox, 0, SpringLayout.EAST, textField_4);
+		accEnquiry.add(paymentMethodBox);
+
+		paymentMethodBox.addItem("Pay By Credit");
+		paymentMethodBox.addItem("Pay By Debit");
 
 		JButton btnPay = new JButton("Pay");
 
 		accEnquiry.add(btnPay);
 
+		btnPay.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String paymentAmount = paymentAmountField.getText();
+				String paymentMethod = (String) paymentMethodBox.getSelectedItem();
+				String pendingAmount = textField_4.getText();
+				try {
+					if (paymentAmount.equals("") || Integer.parseInt(paymentAmount) <= 0) {
+
+						JOptionPane.showMessageDialog(null, "Please enter correct amount");
+
+					} else if (Integer.parseInt(paymentAmount) > Integer.parseInt(pendingAmount)) {
+						JOptionPane.showMessageDialog(null, "You cannot pay more than required fees");
+					} else if (Integer.parseInt(paymentAmount) > 0) {
+						new Payment(studentId, paymentAmount, paymentMethod, pendingAmount);
+						dispose();
+
+					}
+
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(null, "Amount should contain numbers only");
+					;
+				}
+
+			}
+
+		});
+
 		JButton btnCancel = new JButton("Cancel");
-		sl_accEnquiry.putConstraint(SpringLayout.NORTH, btnCancel, 47, SpringLayout.SOUTH, comboBox);
+		sl_accEnquiry.putConstraint(SpringLayout.NORTH, btnCancel, 47, SpringLayout.SOUTH, paymentMethodBox);
 		sl_accEnquiry.putConstraint(SpringLayout.WEST, btnCancel, 242, SpringLayout.WEST, accEnquiry);
 		sl_accEnquiry.putConstraint(SpringLayout.NORTH, btnPay, 0, SpringLayout.NORTH, btnCancel);
 		sl_accEnquiry.putConstraint(SpringLayout.EAST, btnPay, -59, SpringLayout.WEST, btnCancel);
 		accEnquiry.add(btnCancel);
 
 		JLabel lblPayBy = new JLabel("Pay By");
-		sl_accEnquiry.putConstraint(SpringLayout.SOUTH, lblPayBy, 0, SpringLayout.SOUTH, comboBox);
+		sl_accEnquiry.putConstraint(SpringLayout.SOUTH, lblPayBy, 0, SpringLayout.SOUTH, paymentMethodBox);
 		sl_accEnquiry.putConstraint(SpringLayout.EAST, lblPayBy, 0, SpringLayout.EAST, lblAmount);
 		accEnquiry.add(lblPayBy);
 
@@ -387,7 +473,7 @@ public class ClientDashboard extends JFrame {
 		btnAddCourse.setBounds(533, 411, 108, 23);
 		register.add(btnAddCourse);
 
-	btnAddCourse.addActionListener(new ActionListener() {
+		btnAddCourse.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -401,7 +487,7 @@ public class ClientDashboard extends JFrame {
 			}
 		});
 
-		/*JButton btnDropCourse = new JButton("Drop Course");
+		JButton btnDropCourse = new JButton("Drop Course");
 		btnDropCourse.setBounds(651, 411, 108, 23);
 		register.add(btnDropCourse);
 
@@ -435,31 +521,13 @@ public class ClientDashboard extends JFrame {
 
 						} catch (Exception ex) {
 							ex.printStackTrace();
-							// JOptionPane.showMessageDialog(null, "Error while dropping course");
+							// JOptionPane.showMessageDialog(null, "Error while
+							// dropping course");
 
 						}
 					}
 				} else {
 					JOptionPane.showMessageDialog(null, "Please Select course");
-				}
-
-			}
-		});*/
-
-		btnPay.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-
-					if (e.getSource() == btnPay) {
-						Payment payment = new Payment(studentId);
-
-						dispose();
-					}
-
-				} catch (Exception ex) {
-					ex.printStackTrace();
 				}
 
 			}
@@ -488,7 +556,7 @@ public class ClientDashboard extends JFrame {
 
 		// SpringLayout acade = new SpringLayout();
 		// acedamics.setLayout(acade);
-	try {
+		try {
 			DatabaseConnection connection = new DatabaseConnection();
 			Connection conn = connection.openConnection();
 
@@ -559,7 +627,7 @@ public class ClientDashboard extends JFrame {
 			ResultSet rs = (ResultSet) statement.executeQuery(sql);
 
 			while (rs.next()) {
-				// textField_4.setText(rs.getString("present_due"));
+				textField_4.setText(rs.getString("present_due"));
 				// table_2.
 
 			}
@@ -568,7 +636,7 @@ public class ClientDashboard extends JFrame {
 			ex.printStackTrace();
 		}
 
-	try {
+		try {
 			DatabaseConnection connection = new DatabaseConnection();
 			Connection conn = connection.openConnection();
 
@@ -631,7 +699,7 @@ public class ClientDashboard extends JFrame {
 			DatabaseConnection connection = new DatabaseConnection();
 			Connection conn = connection.openConnection();
 
-			String sql = "Select * from student_accessible Where studentid='"+studentId+"'";
+			String sql = "Select * from student_accessible Where studentid='" + studentId + "'";
 			PreparedStatement statement = conn.prepareStatement(sql);
 			ResultSet rs = (ResultSet) statement.executeQuery(sql);
 
@@ -640,21 +708,18 @@ public class ClientDashboard extends JFrame {
 				studentName = rs.getString("name");
 				studentId = rs.getString("studentid");
 				studentAddress = rs.getString("address");
-				
+
 				studentUserName = rs.getString("username");
 				studentDepartment = rs.getString("program");
-				
+
 				// Object[] data= (Object[]) new Object();
-				
-				
+
 				nameField.setText(studentName);
 				addressField.setText(studentAddress);
 
 				studentIdField.setText(studentId);
 
 				userNameField.setText(studentUserName);
-
-				
 
 				departmentField.setText(studentDepartment);
 				// action= new JCheckBox("Details");
